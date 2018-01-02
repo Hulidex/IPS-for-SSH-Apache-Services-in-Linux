@@ -20,7 +20,7 @@ bin/testfirewall: obj/firewall.o obj/fecha.o obj/testfirewall.o
 	$(CXX) $(FLAGS) $^ -o $@
 
 bin/testanalizador: obj/analizador.o obj/firewall.o obj/fecha.o
-	$(CXX) $(FLAGS) -lfl $^ -o $@
+	$(CXX) $(FLAGS) $^ -o $@ -lfl
 
 #OBJETOS
 obj/fecha.o: src/fecha.cpp include/fecha.hpp
