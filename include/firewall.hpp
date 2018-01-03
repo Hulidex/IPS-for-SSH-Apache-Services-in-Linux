@@ -31,8 +31,8 @@ class firewall{
         unsigned intervalo;
         unsigned max_peticiones;
         unsigned tiempo_baneado;
-        unsigned sshPort;
-        unsigned httpPort;
+        unsigned Port;
+        static bool parado;
 
         
         void banear_ip(const std::string &str);
@@ -53,8 +53,7 @@ class firewall{
         void set_intervalo(unsigned segundos);
         void set_maxpeticiones(unsigned peticiones);
         void set_tiempoBaneado(unsigned segundos);
-        void set_sshPort(unsigned puerto);
-        void set_httpPort(unsigned puerto);
+        void setPort(unsigned puerto);
         void set_mod(modoOperacion modo);
         void set_accion(const std::string &accion);
 
@@ -63,8 +62,7 @@ class firewall{
         unsigned get_intervalo();
         unsigned get_maxpeticiones();
         unsigned get_tiempoBaneado();
-        unsigned get_sshPort();
-        unsigned get_httpPort();
+        unsigned getPort();
         modoOperacion get_mod();
         std::string get_accion();
 

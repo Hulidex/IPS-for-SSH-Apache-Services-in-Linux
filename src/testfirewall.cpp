@@ -7,15 +7,14 @@ int main (const int argc, const char *argv[])
     firewall fire;
 
 
-    fire.add("192.168.1.52",fecha("31/Dec/2017:17:03:59","http"));
-    fire.add("192.168.1.52",fecha("31/Dec/2017:17:03:58","http"));
-    fire.add("192.168.1.52",fecha("31/Dec/2017:17:03:57","http"));
-    fire.add("192.168.1.52",fecha("31/Dec/2017:17:03:56","http"));
-    fire.add("192.168.1.52",fecha("31/Dec/2017:17:03:56","http"));
-
-    fire.add("192.168.1.78",fecha("31/Dec/2017:17:03:59","http"));
-    fire.add("192.168.1.78",fecha("31/Dec/2017:17:03:58","http"));
-    fire.add("192.168.1.78",fecha("31/Dec/2017:17:03:57","http"));
+    fire.add("192.168.1.52",fecha("3/Jan/2018:12:03:59","http"));
+    fire.add("192.168.1.52",fecha("3/Jan/2018:12:03:58","http"));
+    fire.add("192.168.1.52",fecha("3/Jan/2018:12:03:57","http"));
+    fire.add("192.168.1.52",fecha("3/Jan/2018:12:03:56","http"));
+    fire.add("192.168.1.52",fecha("3/Jan/2018:12:03:56","http"));
+    fire.add("192.168.1.78",fecha("3/Jan/2018:12:03:59","http"));
+    fire.add("192.168.1.78",fecha("3/Jan/2018:12:03:58","http"));
+    fire.add("192.168.1.78",fecha("3/Jan/2018:12:03:57","http"));
     /*fire.add("192.168.1.52",fecha("31/Sep/2017:17:03:59","http"));
     fire.add("192.168.1.52",fecha("31/Sep/2017:17:03:59","http"));
     fire.add("192.168.1.52",fecha("31/Sep/2017:17:03:59","http"));

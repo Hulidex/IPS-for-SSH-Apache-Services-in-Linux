@@ -2,6 +2,7 @@
 
 
  firewall *firewall::instance;
+ bool firewall::parado;
 
 
 void firewall::banear_ip(const std::string &ip)
@@ -12,7 +13,7 @@ void firewall::banear_ip(const std::string &ip)
 
     if (mod == ssh){
         regla += "-A INPUT -p tcp --dport ";
-        regla += std::to_string(sshPort); 
+        regla += std::to_string(Port); 
         regla += " -s "; 
         regla += ip;
         regla += " -j ";
@@ -20,7 +21,7 @@ void firewall::banear_ip(const std::string &ip)
     }
     else if (mod == http){
         regla += "-A INPUT -p tcp --dport ";
-        regla += std::to_string(httpPort); 
+        regla += std::to_string(Port); 
         regla += " -s "; 
         regla += ip;
         regla += " -j ";
@@ -43,12 +44,14 @@ void firewall::comprobarSiEliminarBaneo()
     std::vector<ban>::iterator it = listaBaneados.begin();
     std::string regla;
 
+
     while(it != listaBaneados.end()){
         if ((time(0) - it->t_inicio) > tiempo_baneado){
 
             regla += it->regla;
             regla.insert(0,"sudo iptables -D ");
             system(regla.c_str());
+            std::cout << "Se ha quitado el baneo de la ip " << it->ip << " tras cumplir un total de " << tiempo_baneado << " seg." << std::endl;
             listaBaneados.erase(it);
             regla.clear();
             
@@ -62,7 +65,7 @@ void firewall::comprobarSiBanear()
 {
     time_t now = time(0);
     fecha hoy;
-    std::map<std::string,std::vector<fecha> >::iterator it;
+    std::map<std::string,std::vector<fecha> >::iterator it = sesiones.begin();
     std::vector<fecha>::iterator vit;
     unsigned peticiones;
     bool baneada;
@@ -71,9 +74,10 @@ void firewall::comprobarSiBanear()
     hoy = fecha(std::string(ctime(&now)).substr(4,15), "ssh");//obtenemos la fecha actual
 
 
-    for (it = sesiones.begin(); it != sesiones.end(); ++it){
+    while(it != sesiones.end()){
         peticiones = 0;
         baneada = false;
+        
         if (it->second.size() > max_peticiones){
             for(vit = it->second.begin(); (vit != it->second.end()) && (!baneada); ++vit){
                 if ((hoy-*vit) <= intervalo)
@@ -81,25 +85,23 @@ void firewall::comprobarSiBanear()
                 if (peticiones > max_peticiones){
                     banear_ip(it->first);
                     baneada = true;
+                    std::cout << "Se ha baneado la siguiente IP: " << it->first << " con almenos " << peticiones << " peticiones en " << intervalo << " seg" << std::endl;
                 }
             }
-
-            if (baneada)
-                it->second.clear();
         }
+
+        if (baneada){
+            it->second.clear();
+            sesiones.erase(it);
+            it = sesiones.begin();
+        }else ++it;
     }
 }
 
 void firewall::manejadorSenial(int signum)
 {
     std::cout << "\nSeñal " << signum << " recibida" << std::endl;
-
-
-    if (firewall::instance->sesiones.size()>0)
-        firewall::instance->clear();
-
-
-    exit(0);
+    parado = true;
 }
 
 firewall::firewall()
@@ -111,8 +113,8 @@ firewall::firewall()
     intervalo =172801; //2 días y un segundo
     max_peticiones = 1000; 
     tiempo_baneado = 300; //5 minutos
-    httpPort = 80;
-    sshPort = 22;
+    Port = 22;
+    parado = false;
 
     firewall::instance = this;
 }
@@ -127,8 +129,8 @@ firewall::firewall(const std::string &ip, const std::vector<fecha> &fechas)
     intervalo =172801; //2 días y un segundo
     max_peticiones = 1000; 
     tiempo_baneado = 300; //5 minutos
-    httpPort = 80;
-    sshPort = 22;
+    Port = 22;
+    parado = false;
 
     firewall::instance = this;
 }
@@ -143,7 +145,6 @@ void firewall::clear()
 
     sesiones.clear();
     listaBaneados.clear();
-    accion.clear();
 }
 
 firewall::~firewall()
@@ -169,11 +170,14 @@ void firewall::run()
 {
     signal(SIGINT, firewall::manejadorSenial);
 
-    while(true)
+    while(!parado && (sesiones.size()>0 || listaBaneados.size() > 0))
     {
         comprobarSiBanear();
         comprobarSiEliminarBaneo();
     }
+
+    parado = false;
+    this->clear();
 }
 
 
@@ -194,14 +198,9 @@ void firewall::set_tiempoBaneado(unsigned segundos)
     this->tiempo_baneado = segundos;
 }
 
-void firewall::set_sshPort(unsigned puerto)
+void firewall::setPort(unsigned puerto)
 {
-    this->sshPort = puerto;
-}
-
-void firewall::set_httpPort(unsigned puerto)
-{
-    this->httpPort = puerto;
+    this->Port = puerto;
 }
 
 void firewall::set_mod(modoOperacion modo)
@@ -232,14 +231,9 @@ unsigned firewall::get_tiempoBaneado()
     return this->tiempo_baneado;
 }
 
-unsigned firewall::get_sshPort()
+unsigned firewall::getPort()
 {
-    return this->sshPort;
-}
-
-unsigned firewall::get_httpPort()
-{
-    return this->httpPort;
+    return this->Port;
 }
 
 modoOperacion firewall::get_mod()
@@ -266,15 +260,15 @@ std::ostream &operator<<(std::ostream &out, const firewall &ses)
     }
 
     if (ses.mod == ssh){
-        out << "Modo operacion: ssh\n" << "Puerto ssh: " << ses.sshPort << std::endl;
+        out << "Modo operacion: ssh\n" << "Puerto ssh: " << ses.Port << std::endl;
     }
     else if (ses.mod == http){
-        out << "Modo opeacion: http\n" << "Puerto http: " << ses.httpPort << std::endl;
+        out << "Modo opeacion: http\n" << "Puerto http: " << ses.Port << std::endl;
     }
 
     out << "Intervalo (seg): " << ses.intervalo << std::endl;
     out << "Numero maximo de Peticiones: " << ses.max_peticiones << std::endl;
-    out << "Tiempo duracion del baneo(seg): " << ses.tiempo_baneado << std::endl;
+    out << "Tiempo duracion del baneo(seg): " << ses.tiempo_baneado;
 
 
 

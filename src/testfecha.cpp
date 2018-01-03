@@ -7,8 +7,8 @@ extern "C" unsigned int sleep(unsigned int seconds);
 
 int main(const int argc, const char *argv[])
 {
-    fecha fech1("30/Dec/2017:20:50:00","http");
-    fecha fech2("Feb 28 21:03:59", "ssh");
+    fecha fech1("02/Jan/2018:21:03:00","http");
+    fecha fech2("Jan  3 12:55:59", "ssh");
     fecha fech3(fech1);
     
 
@@ -26,11 +26,15 @@ int main(const int argc, const char *argv[])
 
     hoy = fecha(std::string(ctime(&now)).substr(4,15), "ssh");
 
+    std::cout << "Hoy bueno: " <<  ctime(&now) << std::endl;
 
-    sleep(5);
+
+    //sleep(5);
     time_t notnow = time(0);
 
-    std::cout << hoy - fech3 << std::endl;
+    std::cout << "Hoy: " << hoy << std::endl;
+
+    std::cout << hoy - fech2 << std::endl;
     std::cout << "xd " << notnow - now << std::endl;
 
 

@@ -117,6 +117,8 @@ fecha::fecha(std::string str, const std::string &formato)
                     else if (aux.compare("Dec") == 0)
                         mes = 12;
                     else mes = 0;
+                    if (str[pos+1] == ' ')
+                        ++pos;
                     str.erase(0, pos+1);                                                                                 
                     break;
                 case 1://Extraemos dia

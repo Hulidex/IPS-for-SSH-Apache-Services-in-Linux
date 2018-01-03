@@ -1890,3 +1890,15 @@ Dec 27 18:20:01 localhost CRON[1161]: pam_unix(cron:session): session opened for
 Dec 27 18:20:01 localhost CRON[1161]: pam_unix(cron:session): session closed for user smmsp
 Dec 27 18:20:09 localhost sudo:  hulidex : TTY=pts/0 ; PWD=/home/hulidex ; USER=root ; COMMAND=/bin/cp /var/log/auth.log .
 Dec 27 18:20:09 localhost sudo: pam_unix(sudo:session): session opened for user root by hulidex(uid=0)
+Jan  3 16:00:07 localhost sshd[1121]: Failed password for invalid user root from 192.168.1.41 port 59576 ssh2
+Jan  3 16:00:07 localhost sshd[1121]: Failed password for invalid user root from 192.168.1.41 port 59576 ssh2
+Jan  3 16:00:07 localhost sshd[1121]: Failed password for invalid user root from 192.168.1.41 port 59576 ssh2
+Jan  3 16:00:07 localhost sshd[1121]: Failed password for invalid user root from 192.168.1.41 port 59576 ssh2
+Jan  3 16:00:07 localhost sshd[1121]: Failed password for invalid user root from 192.168.1.41 port 59576 ssh2
+Jan  3 16:00:07 localhost sshd[1121]: Failed password for invalid user root from 192.168.1.41 port 59576 ssh2
+Jan  3 16:00:07 localhost sshd[1121]: Failed password for invalid user root from 192.168.1.41 port 59576 ssh2
+Jan  3 16:00:07 localhost sshd[1121]: Failed password for invalid user root from 192.168.1.41 port 59576 ssh2
+Jan  3 16:00:07 localhost sshd[1121]: Failed password for invalid user root from 192.168.1.41 port 59576 ssh2
+Jan  3 16:00:07 localhost sshd[1121]: Failed password for invalid user root from 192.168.1.41 port 59576 ssh2
+Jan  3 16:00:07 localhost sshd[1121]: Failed password for invalid user root from 192.168.1.41 port 59576 ssh2
+Jan  3 16:00:07 localhost sshd[1121]: Failed password for invalid user root from 192.168.1.41 port 59576 ssh2
