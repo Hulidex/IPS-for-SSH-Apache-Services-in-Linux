@@ -174,7 +174,7 @@ int MostrarInterfaz()
             str.clear();
             break;
         case 6:
-            std::cout << "Introduzca el tiempo que una ip estará baneada: " << std::endl;
+            std::cout << "Introduzca el tiempo que una ip estará baneada: ";
             std::getline(std::cin,str);
             entrada = std::stoi(str);
             str.clear();

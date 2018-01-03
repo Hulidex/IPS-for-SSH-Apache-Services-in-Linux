@@ -11,26 +11,22 @@ void firewall::banear_ip(const std::string &ip)
     std::string regla;
 
 
-    if (mod == ssh){
-        regla += "-A INPUT -p tcp --dport ";
-        regla += std::to_string(Port); 
-        regla += " -s "; 
-        regla += ip;
-        regla += " -j ";
-        regla += accion;
-    }
-    else if (mod == http){
-        regla += "-A INPUT -p tcp --dport ";
-        regla += std::to_string(Port); 
-        regla += " -s "; 
-        regla += ip;
-        regla += " -j ";
-        regla += accion;
-    }
+    regla += "-I INPUT 1 -p tcp --dport ";
+    regla += std::to_string(Port); 
+    regla += " -s "; 
+    regla += ip;
+    regla += " -j ";
+    regla += accion;
+
     
     baneaso.ip = ip;
     baneaso.t_inicio = time(0);
-    baneaso.regla = regla.substr(2,regla.size()-1);
+    baneaso.regla += "INPUT -p tcp --dport ";
+    baneaso.regla += std::to_string(Port);
+    baneaso.regla += " -s ";
+    baneaso.regla += ip;
+    baneaso.regla += " -j ";
+    baneaso.regla += accion;
     
     listaBaneados.push_back(baneaso);
     regla.insert(0,"sudo iptables ");
