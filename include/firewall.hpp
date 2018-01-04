@@ -19,7 +19,6 @@ struct ban
     std::string regla;
 };
 
-enum modoOperacion {ssh, http};
 
 class firewall{
     private:
@@ -27,7 +26,6 @@ class firewall{
         std::map<std::string,std::vector<fecha> > sesiones;
         std::vector<ban> listaBaneados;
         std::string accion;
-        modoOperacion mod;
         unsigned intervalo;
         unsigned max_peticiones;
         unsigned tiempo_baneado;
@@ -54,7 +52,6 @@ class firewall{
         void set_maxpeticiones(unsigned peticiones);
         void set_tiempoBaneado(unsigned segundos);
         void setPort(unsigned puerto);
-        void set_mod(modoOperacion modo);
         void set_accion(const std::string &accion);
 
 
@@ -63,7 +60,6 @@ class firewall{
         unsigned get_maxpeticiones();
         unsigned get_tiempoBaneado();
         unsigned getPort();
-        modoOperacion get_mod();
         std::string get_accion();
 
 

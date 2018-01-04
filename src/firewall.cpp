@@ -104,7 +104,6 @@ firewall::firewall()
 {
     sesiones = std::map<std::string, std::vector<fecha> >();
     listaBaneados = std::vector<ban>();
-    mod = ssh;
     accion = "DROP";
     intervalo =172801; //2 días y un segundo
     max_peticiones = 1000; 
@@ -120,7 +119,6 @@ firewall::firewall(const std::string &ip, const std::vector<fecha> &fechas)
 {
     sesiones.insert(std::pair<std::string,std::vector<fecha> >(ip, fechas));
     listaBaneados = std::vector<ban>();
-    mod = ssh;
     accion = "DROP";
     intervalo =172801; //2 días y un segundo
     max_peticiones = 1000; 
@@ -199,11 +197,6 @@ void firewall::setPort(unsigned puerto)
     this->Port = puerto;
 }
 
-void firewall::set_mod(modoOperacion modo)
-{
-    this->mod = modo;
-}
-
 void firewall::set_accion(const std::string &accion)
 {
     if (accion == "REJECT")
@@ -232,10 +225,6 @@ unsigned firewall::getPort()
     return this->Port;
 }
 
-modoOperacion firewall::get_mod()
-{
-    return this->mod;
-}
 
 std::string firewall::get_accion()
 {
@@ -255,13 +244,7 @@ std::ostream &operator<<(std::ostream &out, const firewall &ses)
         }
     }
 
-    if (ses.mod == ssh){
-        out << "Modo operacion: ssh\n" << "Puerto ssh: " << ses.Port << std::endl;
-    }
-    else if (ses.mod == http){
-        out << "Modo opeacion: http\n" << "Puerto http: " << ses.Port << std::endl;
-    }
-
+    out << "Puerto: " << ses.Port << std::endl;
     out << "Intervalo (seg): " << ses.intervalo << std::endl;
     out << "Numero maximo de Peticiones: " << ses.max_peticiones << std::endl;
     out << "Tiempo duracion del baneo(seg): " << ses.tiempo_baneado;

@@ -14,29 +14,40 @@ firewall fire;
 std::vector<std::string> matches;
 fecha fech;
 std::string ip, match;
+int pos;
 
 %}
 
-mes         Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec
-numero      [0-9]+
-texto       [a-zA-Z" :_;=/"\[\]\-\(\)0-9]*
-hora        {numero}":"{numero}":"{numero}
-ip          {numero}"."{numero}"."{numero}"."{numero}
-fechassh    {mes}" "+{numero}" "{hora}
-fechahttp   {numero}"/"{mes}"/"{numero}":"{hora}
-sesionssh   {fechassh}{texto}"Failed password"{texto}"from "{ip}
+mes             Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec
+numero          [0-9]+
+texto           [a-zA-Z" :_;=/"\[\]\+\-\(\)0-9]*
+hora            {numero}":"{numero}":"{numero}
+ip              {numero}"."{numero}"."{numero}"."{numero}
+
+fechassh        {mes}" "+{numero}" "{hora}
+fechahttp       {numero}"/"{mes}"/"{numero}":"{hora}
+sesionssh       {fechassh}{texto}"Failed password"{texto}"from "{ip}
+peticionhttp    {ip}{texto}{fechahttp}{texto}("GET"|"POST")
 
 
 
 %%
 
 {sesionssh}     {match = std::string(yytext);
-                 matches.push_back(match);
                  fech = fecha(match.substr(0,14), "ssh");
                  ip = match.substr(match.find("from")+5, match.size());
                  fire.add(ip, fech);
 
                  }
+
+
+
+{peticionhttp}      {match = std::string(yytext);
+                    ip = match.substr(0,match.find("-"));
+                    pos = match.find("[");
+                    fech = fecha(match.substr(pos+1,pos+6), "http");
+                    fire.add(ip,fech);
+                    }
 .               {}
 %%
 
@@ -48,11 +59,6 @@ int MostrarInterfaz()
 
     do{
         std::cout << "------------------------------------------------------------------------------------------" << std::endl;
-        std::cout << "\t0.Establecer el modo de operación.[";
-        if (fire.get_mod() == ssh)
-            std::cout << "ssh]" << std::endl;
-        else std::cout << "http]" << std::endl;
-
         std::cout << "\t1.Indicar otro fichero con los logs." << std::endl;
         std::cout << "\t2.Establecer puerto del protocolo analizado.[" << fire.getPort() << "]" << std::endl;
         std::cout << "\t3.Ajustar el intervalo de análisis.[" << fire.get_intervalo() << " seg]" << std::endl;
@@ -70,26 +76,14 @@ int MostrarInterfaz()
         entrada = std::stoi(str);
         str.clear();
             
-        if (entrada < 0 || entrada > 9)
+        if (entrada < 1 || entrada > 9)
             std::cout << "Opción no valida." << std::endl;
             
-    }while(entrada < 0 || entrada > 9);
+    }while(entrada < 1 || entrada > 9);
     
     system("clear");
 
     switch (entrada){
-        case 0:
-            do{
-                str.clear();
-                std::cout << "Introduzca el modo de operación[ssh|http]: ";
-                std::getline(std::cin, str);
-            }while(str.compare("ssh") != 0 && str.compare("http") != 0);
-            
-            if (str.compare("ssh") == 0)
-                fire.set_mod(ssh);
-            else fire.set_mod(http);
-
-            break;
         case 1:
             std::cout << "Introduzca la ruta donde se encuentra el fichero con los logs: ";
             std::getline(std::cin, str);
@@ -107,10 +101,9 @@ int MostrarInterfaz()
                 exit(EXIT_FAILURE);
             }
             
+            fire.clear();
             
             yylex();
-
-            std::cout << fire << std::endl;
 
             break;
         case 2:
@@ -199,7 +192,7 @@ int MostrarInterfaz()
              "tiene como propósito proteger de ataques DOS (Denial-of-service attack) básicos a ciertos protocolos (ssh y http).\n"
             "Es imprescindible que antes de ajustar ningún parámetro en el firewall, se indique la ruta del fichero que contiene"
              "los logs del protocolo que se quiere proteger (Opción 1). El firewall por defecto tiene la siguiente configuración:\n"
-            " Trabaja suponiendo que el protocolo a proteger es el ssh, que dicho protocolo está escuchando sobre el puerto 22 y si" 
+            " Trabaja suponiendo que el protocolo a proteger es el ssh y por tanto que dicho protocolo está escuchando sobre el puerto 22 y si" 
              " capta peticiones de intento de sesión fallidos en dicho protocolo, tiene en cuenta aquellos intentos que se produjeron "
              " desde hace 172801 segundos (2 días), hasta el momento actual.\nSi en ese intervalo se han hecho más de 1000 peticiones, "
              " entonces banea la ip, aplicando la opción \"DROP\", es decir si dicha ip realiza más peticiones de acceso, el firewall"
@@ -252,8 +245,6 @@ int main (int argc, const char *argv[])
     
     
     yylex();
-
-    std::cout << fire << std::endl;
 
     salida = MostrarInterfaz();
     while (salida != -1){
